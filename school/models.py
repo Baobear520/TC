@@ -20,8 +20,14 @@ class Course(models.Model):
     level = models.ForeignKey(Level,on_delete=models.CASCADE)
     number_of_classes = models.IntegerField()
     price = models.DecimalField('tuition_fee',max_digits=9,decimal_places=2)
+
+    def __str__(self) -> str:
+        return self.title
 class Enrollment(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)
     date = models.DateField(auto_created=True)
     course = models.ForeignKey(Course,on_delete=models.PROTECT)
 
+    def __str__(self) -> str:
+        return f'{self.date} {self.student}'
+    
