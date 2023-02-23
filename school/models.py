@@ -33,3 +33,8 @@ class Enrollment(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)
     date_enrolled = models.DateField(auto_created=True)
     course = models.ForeignKey(Course,on_delete=models.PROTECT)
+
+    def __str__(self) -> str:
+        return str(self.date_enrolled)
+
+    

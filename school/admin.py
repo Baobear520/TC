@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Subquery,OuterRef, Q, Count
 from django.utils.html import format_html,urlencode
 from django.urls import reverse
 from .models import *
@@ -13,13 +14,37 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('date_enrolled','student','course')
+    list_display = ('date_enrolled','student','course',)
     date_hierarchy = 'date_enrolled'
-
+    list_filter = ('student',)
+   
+    
+        
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('title','number_of_current_enrollments')
 
+    @admin.display(ordering='number_of_current_enrollments')
+    def number_of_current_enrollments(self,course):
+        return course.number_of_current_enrollments
+
+    def get_queryset(self, request):
+        current_year = datetime.datetime.now().year
+        num = Count(
+                'enrollment',
+                filter=Q(enrollment__date_enrolled__year=current_year)
+                )
+        return super().get_queryset(request).annotate(number_of_current_enrollments=num)
+      
+        
+    
+    
+
+        
+        
+
+
+  
 @admin.register(Level)
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('title',)
