@@ -14,11 +14,11 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('date_enrolled','student','course',)
+    list_display = ('date_enrolled','student','course','money_paid','lessons')
     date_hierarchy = 'date_enrolled'
     list_filter = ('student',)
-   
-    
+    list_editable = ('lessons','money_paid')
+    #list_select_related = ('student','course')
         
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
