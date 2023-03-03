@@ -6,10 +6,16 @@ from .models import *
 # Register your models here.
 
 
+class StudentInline(admin.TabularInline):
+    model = Enrollment
+    min_num = 1
+    max_num = 2
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'is_enrolled')
-
+    inlines = [StudentInline]
+    search_fields = ('first_name','last_name')
+    
     @admin.display(ordering='is_enrolled',boolean=True)
     def is_enrolled(self, student):
         return student.is_enrolled
@@ -28,6 +34,8 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
+    exclude = ('lessons',)
+    autocomplete_fields = ('student',)
     list_display = ('date_enrolled', 'student',
                     'course', 'money_paid', 'lessons')
     date_hierarchy = 'date_enrolled'
