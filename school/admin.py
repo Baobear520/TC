@@ -10,8 +10,8 @@ from .models import *
 class StudentInline(admin.TabularInline):
     model = Enrollment
     min_num = 1
-    max_num = 2
     extra = 0
+
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'is_enrolled')
@@ -25,7 +25,6 @@ class StudentAdmin(admin.ModelAdmin):
     @admin.display(ordering='is_enrolled',boolean=True)
     def is_enrolled(self, student):
         return student.is_enrolled
-
     
     def get_queryset(self,request):
         return super().get_queryset(request).annotate(
@@ -34,20 +33,18 @@ class StudentAdmin(admin.ModelAdmin):
             student=OuterRef('pk')).filter(lessons__gt=0))
             
         )
-                            
-        
-
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    exclude = ('lessons',)
     autocomplete_fields = ('student',)
     list_display = ('date_enrolled', 'student',
                     'course', 'money_paid', 'lessons')
+    ordering = ('-lessons',)
     date_hierarchy = 'date_enrolled'
     list_filter = ('student','course')
     list_editable = ('lessons', 'money_paid')
-
+    
+    
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):

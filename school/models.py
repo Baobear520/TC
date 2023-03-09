@@ -54,8 +54,9 @@ class Enrollment(models.Model):
         return str(self.date_enrolled)
 
     def save(self,*args,**kwargs):
-        if not self.lessons:
+        if self.pk is None:
             self.lessons = self.course.number_of_classes
+            return super().save(*args,**kwargs)
         if self.student.date_registered > self.date_enrolled:
             raise ValidationError('Enrollment date cannot be eairlier than registration date.')
         return super().save(*args,**kwargs)
