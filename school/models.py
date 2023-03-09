@@ -1,8 +1,10 @@
-import datetime
+from django.utils import timezone
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+import datetime
+
 
 # Create your models here.
 class Student(models.Model):
@@ -12,21 +14,19 @@ class Student(models.Model):
     
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name}'
-    
-
     class Meta:
         ordering = ['last_name']
-
 
 class Level(models.Model):
     title = models.TextField(max_length=255)
 
     def __str__(self) -> str:
         return self.title
+    
 class Course(models.Model):
     title = models.TextField(max_length=255)
     level = models.ForeignKey(Level,on_delete=models.CASCADE)
-    number_of_classes = models.IntegerField(validators=[MinValueValidator(1)])
+    number_of_classes = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField('tuition fee',
         max_digits=7,
         decimal_places=1,
@@ -40,24 +40,20 @@ class Course(models.Model):
 
 class Enrollment(models.Model):
     student = models.ForeignKey(Student,on_delete=models.PROTECT)
-    date_enrolled = models.DateField(auto_created=True)
+    date_enrolled = models.DateField(default=timezone.now)
     course = models.ForeignKey(Course,on_delete=models.PROTECT)
     money_paid = models.DecimalField('Payment',
         max_digits=7,
         decimal_places=1,
         validators=[MinValueValidator(0)])
-    lessons = models.IntegerField('Number of lessons left',
-        blank=True,
-        validators=[MinValueValidator(0)])
+    lessons = models.PositiveIntegerField('Number of lessons left',
+        blank=True)
 
     def __str__(self) -> str:
         return str(self.date_enrolled)
-
+    
     def save(self,*args,**kwargs):
         if self.pk is None:
             self.lessons = self.course.number_of_classes
             return super().save(*args,**kwargs)
-        if self.student.date_registered > self.date_enrolled:
-            raise ValidationError('Enrollment date cannot be eairlier than registration date.')
-        return super().save(*args,**kwargs)
-    
+        

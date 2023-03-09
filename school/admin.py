@@ -30,21 +30,45 @@ class StudentAdmin(admin.ModelAdmin):
         return super().get_queryset(request).annotate(
             is_enrolled=Exists(
             Enrollment.objects.filter(
-            student=OuterRef('pk')).filter(lessons__gt=0))
-            
+            student=OuterRef('pk')).filter(lessons__gt=0)) 
         )
+
+class EnrollmentLessonsLeftFilter(admin.SimpleListFilter):
+    title = 'lessons left'
+    parameter_name = 'lessons left'
+
+    def lookups(self,request,model_admin):
+        return (
+            ('<10','Low'),
+            ('10<= and <=20', 'OK'),
+            ('>20','Plenty'),
+        )
+    def queryset(self, request,queryset):
+        if self.value() == '<10':
+            return queryset.filter(lessons__lt=10)
+        
+        if self.value() == '10<= and <20':
+            return queryset.filter(lessons__lte=20,lessons__gte=10)
+        
+        if self.value() == '>20':
+            return queryset.filter(lessons__gt=20)
+
+
+
+
+
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
     autocomplete_fields = ('student',)
     list_display = ('date_enrolled', 'student',
-                    'course', 'money_paid', 'lessons')
+                    'course', 'money_paid','lessons')
     ordering = ('-lessons',)
     date_hierarchy = 'date_enrolled'
-    list_filter = ('student','course')
+    list_filter = ('student','course',EnrollmentLessonsLeftFilter)
     list_editable = ('lessons', 'money_paid')
     
-    
+
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
