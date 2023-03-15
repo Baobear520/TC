@@ -19,13 +19,14 @@ class Student(models.Model):
 
 class Level(models.Model):
     title = models.TextField(max_length=255)
-
+    description = models.TextField(max_length=611,null=True,blank=True)
     def __str__(self) -> str:
         return self.title
     
 class Course(models.Model):
     title = models.TextField(max_length=255)
     level = models.ForeignKey(Level,on_delete=models.CASCADE)
+    description = models.TextField(max_length=611,null=True,blank=True)
     number_of_classes = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField('tuition fee',
         max_digits=7,
@@ -36,7 +37,7 @@ class Course(models.Model):
     def __str__(self) -> str:
         return self.title
 
-    
+
 
 class Enrollment(models.Model):
     student = models.ForeignKey(Student,on_delete=models.PROTECT)
@@ -55,5 +56,7 @@ class Enrollment(models.Model):
     def save(self,*args,**kwargs):
         if self.pk is None:
             self.lessons = self.course.number_of_classes
-            return super().save(*args,**kwargs)
+        if self.lessons > self.course.number_of_classes:
+            raise ValidationError('Number of lessons left cannot be greater than number of lessons in a course')
+        return super().save(*args,**kwargs)
         

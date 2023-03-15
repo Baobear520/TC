@@ -39,18 +39,19 @@ class EnrollmentLessonsLeftFilter(admin.SimpleListFilter):
 
     def lookups(self,request,model_admin):
         return (
+            ('=0','Not enrolled'),
             ('<10','Low'),
             ('10<= and <=20', 'OK'),
             ('>20','Plenty'),
         )
     def queryset(self, request,queryset):
-        if self.value() == '<10':
+        if self.value() == '=0':
+            return queryset.filter(lessons=0)
+        elif self.value() == '<10':
             return queryset.filter(lessons__lt=10)
-        
-        if self.value() == '10<= and <20':
+        elif self.value() == '10<= and <20':
             return queryset.filter(lessons__lte=20,lessons__gte=10)
-        
-        if self.value() == '>20':
+        elif self.value() == '>20':
             return queryset.filter(lessons__gt=20)
 
 
@@ -68,16 +69,13 @@ class EnrollmentAdmin(admin.ModelAdmin):
     list_filter = ('student','course',EnrollmentLessonsLeftFilter)
     list_editable = ('lessons', 'money_paid')
     
-
+    
+    
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title', 'number_of_current_enrollments')
-    formfield_overrides = {
-        models.CharField: {'widget': TextInput(attrs={'size':'20'})},
-        models.TextField: {'widget': Textarea(attrs={'rows':4, 'cols':40})},
-    }
-
+    
 
     @admin.display(ordering='number_of_current_enrollments')
     def number_of_current_enrollments(self, course):
@@ -91,9 +89,21 @@ class CourseAdmin(admin.ModelAdmin):
         return super().get_queryset(request).annotate(
             number_of_current_enrollments=num)
 
+    def formfield_for_dbfield(self, db_field, request,**kwargs):
+        field = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == 'title':
+            field.widget.attrs = {'size':'20',}
+        if db_field.name == 'description':
+            field.widget.attrs = {
+                'rows':4, 
+                'cols':80
+            }
+        return field
 
 class LevelInline(admin.TabularInline):
+
     model = Course
+    exclude = ('description',)
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'20'})},
         models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':30})},
@@ -105,7 +115,15 @@ class LevelInline(admin.TabularInline):
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('title',)
     inlines = [LevelInline]
-    formfield_overrides = {
-        models.CharField: {'widget': TextInput(attrs={'size':'20'})},
-        models.TextField: {'widget': Textarea(attrs={'rows':4, 'cols':40})},
-    }
+    
+    def formfield_for_dbfield(self, db_field, request,**kwargs):
+        field = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == 'title':
+            field.widget.attrs = {
+                'size':'20'}
+        if db_field.name == 'description':
+            field.widget.attrs = {
+                'rows':4, 
+                'cols':80
+            }
+        return field
