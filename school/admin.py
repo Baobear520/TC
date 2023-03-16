@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.forms import TextInput, Textarea
 from django.db.models import Q, Count, OuterRef, Subquery, Value, F, Exists
+from django.forms import TextInput, Textarea
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
 from .models import *
@@ -11,12 +11,15 @@ class StudentInline(admin.TabularInline):
     model = Enrollment
     min_num = 1
     extra = 0
+    actions = []
+    
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'is_enrolled')
+    list_display = ('__str__', 'is_enrolled')
     inlines = [StudentInline]
     search_fields = ('first_name','last_name')
+    readonly_fields = ('show_image',)
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'20'})},
         models.TextField: {'widget': Textarea(attrs={'rows':4, 'cols':40})},
@@ -25,6 +28,9 @@ class StudentAdmin(admin.ModelAdmin):
     @admin.display(ordering='is_enrolled',boolean=True)
     def is_enrolled(self, student):
         return student.is_enrolled
+    
+    
+    
     
     def get_queryset(self,request):
         return super().get_queryset(request).annotate(
@@ -39,24 +45,23 @@ class EnrollmentLessonsLeftFilter(admin.SimpleListFilter):
 
     def lookups(self,request,model_admin):
         return (
-            ('=0','Not enrolled'),
-            ('<10','Low'),
+            ('=0','Finished course'),
+            ('0< and <10','Low'),
             ('10<= and <=20', 'OK'),
             ('>20','Plenty'),
+            ('>0','Currently studying')
         )
     def queryset(self, request,queryset):
         if self.value() == '=0':
             return queryset.filter(lessons=0)
-        elif self.value() == '<10':
-            return queryset.filter(lessons__lt=10)
-        elif self.value() == '10<= and <20':
-            return queryset.filter(lessons__lte=20,lessons__gte=10)
+        elif self.value() == '0< and <10':
+            return queryset.filter(Q(lessons__gt=0) & Q(lessons__lt=10))
+        elif self.value() == '10<= and <=20':
+            return queryset.filter(Q(lessons__lte=20) & Q(lessons__gte=10))
         elif self.value() == '>20':
             return queryset.filter(lessons__gt=20)
-
-
-
-
+        elif self.value() == '>0':
+            return queryset.filter(lessons__gt=0)
 
 
 @admin.register(Enrollment)
@@ -69,12 +74,13 @@ class EnrollmentAdmin(admin.ModelAdmin):
     list_filter = ('student','course',EnrollmentLessonsLeftFilter)
     list_editable = ('lessons', 'money_paid')
     
-    
-    
+
+   
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'number_of_current_enrollments')
+    list_display = ('title','number_of_current_enrollments')
+    ordering = ('-number_of_classes','-level')
     
 
     @admin.display(ordering='number_of_current_enrollments')

@@ -1,4 +1,6 @@
+from django.forms import ModelForm
 from django.utils import timezone
+from django.utils.html import mark_safe
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
@@ -11,11 +13,21 @@ class Student(models.Model):
     first_name = models.TextField(max_length=255)
     last_name = models.TextField(max_length=255)
     date_registered = models.DateField(auto_created=True)
+    photo = models.ImageField('Upload photo',upload_to='images',null=True,blank=True) 
     
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name}'
+    
+    def show_image(self):
+        if self.photo:
+            return mark_safe(f'<img src = "{self.photo.url}" width = "300"/>')
+        return '-'
+    show_image.short_description = 'Photo preview'
     class Meta:
         ordering = ['last_name']
+
+    
+
 
 class Level(models.Model):
     title = models.TextField(max_length=255)
@@ -59,4 +71,8 @@ class Enrollment(models.Model):
         if self.lessons > self.course.number_of_classes:
             raise ValidationError('Number of lessons left cannot be greater than number of lessons in a course')
         return super().save(*args,**kwargs)
-        
+    
+    
+
+   
+   
