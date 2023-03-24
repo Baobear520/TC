@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title%}Students list{% endblock %}
+ 
+{% block header %}  
+Registered students
+{% endblock%}
+    
+{% if students_list %}
+
+{% block loop_iteration %}
+{% for student in students_list %}
+  <li> {{ student }}</li>
+{% endfor %}
+{% endblock %}
+
+{% endif %}
+

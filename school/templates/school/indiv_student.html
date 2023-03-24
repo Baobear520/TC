@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title> {{student}}</title>
+  </head>
+  <body>
+    <h1>{{student}}'s existing enrollments:</h1>
+    <h2> {{student.show_image}}</h2>
+    <ul>
+    {% for enrollment in student.enrollment_set.all %}  
+    <li> {{ enrollment.date_enrolled }}</a></li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>

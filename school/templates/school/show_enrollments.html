@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title%}Enrollments list{% endblock%}
+{% block header%}Enrollments{% endblock %}
+
+{% if enrollments_list %}
+{% block loop_iteration%}
+{% for enrollment in enrollments_list %}
+  <li> {{ enrollment }} <a href="{% url 'individual student' enrollment.student_id %}">{{ enrollment.student }}</a>
+    <p> <em> Money paid </em> {{ enrollment.money_paid }}</p>
+  </li>
+{% endfor %}
+{% endblock %}
+{% else %}
+<p>No enrollments yet</p>
+{% endif %}
+ 
+
