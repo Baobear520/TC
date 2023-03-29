@@ -5,7 +5,9 @@
 {% if enrollments_list %}
 {% block loop_iteration%}
 {% for enrollment in enrollments_list %}
-  <li> {{ enrollment }} <a href="{% url 'individual student' enrollment.student.id %}">{{ enrollment.student}}</a>
+  <li> {{ enrollment }} 
+    <a href="{% url 'individual student' enrollment.student.id %}">{{ enrollment.student}}
+    </a>
   </li>
 {% endfor %}
 {% endblock %}
