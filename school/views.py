@@ -10,8 +10,6 @@ class StudentsView(ListView):
     template_name = 'school/show_students.html'
     context_object_name = 'students_list'
 
-    #def get_queryset(self):
-        #return Student.objects.all()
 
 class StudentDetailView(DetailView):
     model = Student
@@ -22,6 +20,7 @@ class EnrollmentsListView(ListView):
     template_name = 'school/show_enrollments.html'
     context_object_name = 'enrollments_list'
 
-    #def get_queryset(self):
-        #return Enrollment.objects.all()
+class EnrollmentDetailView(DetailView):
+    model = Enrollment
+    template_name = 'school/indiv_enrollment.html'
 

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_list.html" %}
 {% block title%}Enrollments list{% endblock%}
 {% block header%}Enrollments{% endblock %}
 
@@ -6,7 +6,6 @@
 {% block loop_iteration%}
 {% for enrollment in enrollments_list %}
   <li> {{ enrollment }} <a href="{% url 'individual student' enrollment.student.id %}">{{ enrollment.student}}</a>
-    <p> <em> Money paid </em> {{ enrollment.money_paid }}</p>
   </li>
 {% endfor %}
 {% endblock %}

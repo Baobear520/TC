@@ -1,0 +1,15 @@
+{% extends "base_detail.html" %}
+{% block title %}{{enrollment}}
+{% endblock%}
+{% block header %}Enrollment information:
+{% endblock%}
+
+{% block content %}
+{% if enrollment %}
+<p>{{ enrollment.date_enrolled}}</p>
+{% else %}
+<p>No existing enrollments with given ID</p>
+{% endif %}
+{% endblock content %}
+
+   
