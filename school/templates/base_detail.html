@@ -9,7 +9,7 @@
     <h1>{% block header %}{% endblock%} </h1>
     <picture>{% block picture%}{% endblock%}</picture>
     {% block content%}
-    {% block loop_iteration %}{% endblock %}
+    <ul>{% block loop_iteration %}{% endblock %}</ul>
     {% endblock content%}
   </body>
 </html>

@@ -6,14 +6,11 @@
 {% block picture %}{{ student.show_image }}{% endblock %}
 
 {% block content %}
-{% if student.enrollment %}
-<p>Nice</p>
-
+{% if student.enrollment_set.all|length >= 1 %}
 {% block loop_iteration%}
-    <u>{% for enrollment in student.enrollment_set.all %}  
-    <li> {{ enrollment.date_enrolled }}</a></li>
+    {% for enrollment in student.enrollment_set.all %}  
+    <li> {{ enrollment.date_enrolled }}</li>
     {% endfor %}
-    </u>
 {% endblock%}
 
 {% else %}
