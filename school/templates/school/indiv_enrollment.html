@@ -6,7 +6,12 @@
 
 {% block content %}
 {% if enrollment %}
-<p>{{ enrollment.date_enrolled}}</p>
+<p>Student: {{enrollment.student}}</p>
+<p>Date enrolled: {{ enrollment.date_enrolled}}</p>
+<p>Course: {{ enrollment.course }}</p>
+<p>Number of lessons left: {{enrollment.lessons}}</p>
+<p>Money paid: {{enrollment.money_paid}}</p>
+
 {% else %}
 <p>No existing enrollments with given ID</p>
 {% endif %}

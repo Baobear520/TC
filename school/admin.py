@@ -75,8 +75,6 @@ class EnrollmentAdmin(admin.ModelAdmin):
     list_editable = ('lessons', 'money_paid')
     
 
-   
-
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title','number_of_current_enrollments')

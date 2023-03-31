@@ -1,21 +1,28 @@
 {% extends "base_detail.html" %}
-{% block title %}{{student}}
+{% block title %}{{ student }}
 {% endblock %}
 
 {% block header %} {{student}}'s existing enrollments:{% endblock%}
 {% block picture %}{{ student.show_image }}{% endblock %}
 
 {% block content %}
-{% if student.enrollment_set.all|length >= 1 %}
-{% block loop_iteration%}
-    {% for enrollment in student.enrollment_set.all %}  
-    <li> {{ enrollment.date_enrolled }}</li>
-    {% endfor %}
-{% endblock%}
+<p>Date registered: {{ student.date_registered}}</p>
 
+{% block loop_iteration %}
+{% for enrollment in enrollment_list %}
+<li>{{ enrollment}}</li>
+{% endfor %}
+{% endblock %}
+<p>Current enrollments:
+{% if current_enrollments %}
+    <ul>{% for enrollment in current_enrollments %}
+    <li>{{ enrollment}}</li>
+    {% endfor %}
+    </ul>
 {% else %}
-<p>No existing enrollments for this student.</p>
+no current enrollments for the student.
 {% endif %}
+</p>
 {% endblock content %}
 
 
