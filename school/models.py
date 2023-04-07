@@ -62,6 +62,10 @@ class Enrollment(models.Model):
     lessons = models.PositiveIntegerField('Number of lessons left',
         blank=True)
 
+    class Meta:
+        ordering = ('date_enrolled',)
+
+        
     def __str__(self) -> str:
         return str(self.date_enrolled)
     

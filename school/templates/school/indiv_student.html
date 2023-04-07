@@ -8,25 +8,22 @@
 {% block content %}
 <p>Date registered: {{ student.date_registered}}</p>
 
-{% block loop_iteration %}
-{% for enrollment in enrollment_list %}
-<li>{{ enrollment}}</li>
-{% endfor %}
-{% endblock %}
+<p>Existing enrollments:
+    <ul>{% for enrollment in enrollment_list %}
+        <li>{{ enrollment}}</li>
+        {% endfor %}
+        </ul>
+</p>
+
 <p>Current enrollments:
 {% if current_enrollments %}
     <ul>{% for enrollment in current_enrollments %}
-    <li>{{ enrollment}}</li>
+    <li>{{ enrollment}}, lessons left - {{enrollment.lessons}}</li>
     {% endfor %}
     </ul>
 {% else %}
 no current enrollments for the student.
 {% endif %}
 </p>
-{% endblock content %}
 
-
-
-
-
-   
+{% endblock content%}

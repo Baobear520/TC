@@ -1,0 +1,13 @@
+
+<html>
+<head>
+    <title>Create a student</title>
+</head>
+<body>
+    <form action='/school/students/enter-your-name/thanks' method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

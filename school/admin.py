@@ -29,9 +29,6 @@ class StudentAdmin(admin.ModelAdmin):
     def is_enrolled(self, student):
         return student.is_enrolled
     
-    
-    
-    
     def get_queryset(self,request):
         return super().get_queryset(request).annotate(
             is_enrolled=Exists(
@@ -51,7 +48,7 @@ class EnrollmentLessonsLeftFilter(admin.SimpleListFilter):
             ('>20','Plenty'),
             ('>0','Currently studying')
         )
-    def queryset(self, request,queryset):
+    def queryset(self,request,queryset):
         if self.value() == '=0':
             return queryset.filter(lessons=0)
         elif self.value() == '0< and <10':
