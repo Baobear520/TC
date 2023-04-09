@@ -9,9 +9,10 @@ import datetime
 
 
 # Create your models here.
-class Student(models.Model):
-    first_name = models.TextField(max_length=255)
-    last_name = models.TextField(max_length=255)
+class Student(models.Model): 
+    first_name = models.CharField(max_length=31)
+    last_name = models.CharField(max_length=31)
+    date_of_birth = models.DateField()
     date_registered = models.DateField(auto_created=True)
     photo = models.ImageField('Upload photo',upload_to='images',null=True,blank=True) 
     

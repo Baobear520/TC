@@ -1,33 +1,56 @@
+from django.contrib.auth.models import User,Group
 from django.views.generic import ListView,DetailView
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from school.models import Student,Enrollment
+from school.serializers import StudentSerializer
 
 
 # Create your views here.
-class StudentsView(ListView):
-    model = Student
-    template_name = 'school/show_students.html'
-    context_object_name = 'students_list'
+#class UserViewSet(viewsets.ModelViewSet):
+    #queryset = User.objects.all()
+    #serializer_class = UserSerializer
+    #permission_classes = [permissions.IsAuthenticated]
 
 
-class StudentDetailView(DetailView):
-    model = Student
-    template_name = 'school/indiv_student.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        enrollment_list = Enrollment.objects.filter(student=self.kwargs['pk'])
-        context['enrollment_list'] = enrollment_list 
-        context['current_enrollments'] = enrollment_list.filter(lessons__gt=0)
-        return context
+#class GroupViewSet(viewsets.ModelViewSet):
+    #queryset = Group.objects.all()
+    #serializer_class = GroupSerializer
+    #permission_classes = [permissions.IsAuthenticated]
 
-    
-class EnrollmentsListView(ListView):
-    model = Enrollment
-    template_name = 'school/show_enrollments.html'
-    context_object_name = 'enrollments_list'
+@api_view(['GET','POST'])
+def student_list(request):
+    if request.method == 'GET':
+        students = Student.objects.all()
+        serializer = StudentSerializer(students,many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.data,status=status.HTTP_400_BAD_REQUEST)
 
-class EnrollmentDetailView(DetailView):
-    model = Enrollment
-    template_name = 'school/indiv_enrollment.html'
+@api_view(['GET','PUT','DELETE'])
+def student_detail(request,pk):
+    try:
+        student = Student.objects.get(pk=pk)
+    except Student.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
+
+    if request.method == 'GET':
+        serializer = StudentSerializer(student)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = StudentSerializer(student,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        student.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
 

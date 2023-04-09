@@ -1,7 +1,8 @@
 from django.urls import include, path
-from . import views
-
+from rest_framework import routers
+from school import views
 
 urlpatterns = [
-    path('api-auth/',include('rest_framework.urls'))
-    ]
+    path('students', views.student_list),
+    path('students/<int:pk>/', views.student_detail),
+]
