@@ -3,6 +3,6 @@ from rest_framework import routers
 from school import views
 
 urlpatterns = [
-    path('students', views.student_list),
-    path('students/<int:pk>/', views.student_detail),
+    path('students', views.StudentList.as_view()),
+    path('students/<int:pk>/', views.StudentDetail.as_view()),
 ]
