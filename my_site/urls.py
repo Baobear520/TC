@@ -27,7 +27,7 @@ from school import views
 
 urlpatterns = [
     #path('',include(router.urls)),
-    #path('api-auth/',include('rest_framework.urls',namespace='rest_framework')),
+    path('api-auth/',include('rest_framework.urls',namespace='rest_framework')),
     path("admin/", admin.site.urls),
     path('__debug__/', include('debug_toolbar.urls')),
     path("school/",include('school.urls')),

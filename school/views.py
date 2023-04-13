@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User,Group
 
-from rest_framework import status,mixins,generics
+from rest_framework import generics,permissions
 
 from school.models import Student,Enrollment,Course,Level
 from school.serializers import StudentSerializer,EnrollmentSerializer,\
-CourseSerializer,LevelSerializer
+CourseSerializer,LevelSerializer, UserSerializer
 
 
 # Create your views here.
@@ -22,17 +22,24 @@ CourseSerializer,LevelSerializer
 class StudentList(generics.ListCreateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        
 class StudentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
 
+    
+
+    
 
 class EnrollmentList(generics.ListCreateAPIView):
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
-
+    permission_classes = [permissions.IsAdminUser]
+    
 
 class EnrollmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Enrollment.objects.all()
@@ -51,12 +58,24 @@ class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
 class LevelList(generics.ListCreateAPIView):
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
-
+    
 class LevelDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
+    
 
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+    
 
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    
+
+    
     
     
         

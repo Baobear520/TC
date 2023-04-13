@@ -5,19 +5,17 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-import datetime
+
 
 
 # Create your models here.
 class Student(models.Model): 
-    first_name = models.CharField(max_length=31)
-    last_name = models.CharField(max_length=31)
+    user = models.OneToOneField('auth.User',on_delete=models.CASCADE)
     date_of_birth = models.DateField()
-    date_registered = models.DateField(auto_created=True)
     photo = models.ImageField('Upload photo',upload_to='images',null=True,blank=True) 
     
     def __str__(self) -> str:
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
     
     def show_image(self):
         if self.photo:
@@ -25,7 +23,7 @@ class Student(models.Model):
         return '-'
     show_image.short_description = 'Photo preview'
     class Meta:
-        ordering = ['last_name']
+        ordering = ['user__last_name']
 
     
 
