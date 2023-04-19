@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User,Group
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from school.models import Student,Enrollment,Course,Level
 
@@ -8,18 +8,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id','username','password','first_name','last_name')
 
 
-
-#class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    #class Meta:
-        #model = Group
-        #fields = ['url','name']
-
-
 class StudentSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = ('user','id','date_of_birth','show_image')
+        
 
 class LevelSerializer(serializers.ModelSerializer):
     class Meta:
