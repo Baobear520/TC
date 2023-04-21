@@ -16,7 +16,7 @@ class StudentInline(admin.TabularInline):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'is_enrolled')
+    list_display = ('first_name','last_name','is_enrolled')
     inlines = [StudentInline]
     search_fields = ('first_name','last_name')
     readonly_fields = ('show_image',)

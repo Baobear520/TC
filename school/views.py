@@ -1,22 +1,17 @@
-from django.contrib.auth.models import User,Group
 from django.shortcuts import get_object_or_404
-
 from rest_framework import generics,permissions,status, viewsets
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.mixins import CreateModelMixin,UpdateModelMixin,RetrieveModelMixin
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from school.models import Student,Enrollment,Course,Level
 from school.serializers import StudentSerializer,EnrollmentSerializer,\
-CourseSerializer,LevelSerializer, UserSerializer
+CourseSerializer,LevelSerializer
 from school.permissions import IsAdminOrReadOnly
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = []
     
 
-class StudentViewSet(viewsets.ModelViewSet):
+class StudentViewSet(CreateModelMixin,viewsets.GenericViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer 
     permission_classes = []

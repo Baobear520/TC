@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from datetime import timedelta
 import os
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,7 +41,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "school.apps.SchoolConfig",
-    "debug_toolbar"
+    "registration.apps.RegistrationConfig",
+    "debug_toolbar",
+    "djoser"
 ]
 
 MIDDLEWARE = [
@@ -133,10 +137,22 @@ INTERNAL_IPS = [
     # ...
 ]
 
-#REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    #'DEFAULT_PERMISSION_CLASSES': [
-        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    #]
-#}
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+   "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60)
+}
+
+AUTH_USER_MODEL = 'registration.User'
+
+DJOSER = {
+    'SERIALIZERS': {
+    'user_create': 'registration.serializers.UserCreateSerializer',
+    'user': 'registration.serializers.UserRetrieveSerializer',
+    'current_user': 'registration.serializers.UserRetrieveSerializer'
+    }
+}

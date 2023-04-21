@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.forms import ModelForm
 from django.utils import timezone
 from django.utils.html import mark_safe
@@ -10,18 +11,27 @@ from django.db import models
 
 # Create your models here.
 class Student(models.Model): 
-    user = models.OneToOneField('auth.User',on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     date_of_birth = models.DateField()
     photo = models.ImageField('Upload photo',upload_to='images',null=True,blank=True) 
     
     def __str__(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
     
+    @admin.display(ordering='user__first_name')
+    def first_name(self):
+        return self.user.first_name
+
+    @admin.display(ordering='user__last_name')
+    def last_name(self):
+        return self.user.last_name
+
     def show_image(self):
         if self.photo:
             return mark_safe(f'<img src = "{self.photo.url}" width = "300"/>')
         return '-'
     show_image.short_description = 'Photo preview'
+    
     class Meta:
         ordering = ['user__last_name']
 
