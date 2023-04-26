@@ -18,7 +18,7 @@ from django.urls import include,path
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework import routers
-from school import views
+from registration import views
 
 
 urlpatterns = [

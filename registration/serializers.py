@@ -1,16 +1,20 @@
-from djoser.serializers import UserCreateSerializer as BaseCreateUserSerializer, UserSerializer
+
+from django.conf import settings
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.contrib.auth.password_validation import validate_password
+from djoser.serializers import UserCreateSerializer as BaseCreateUserSerializer, UserSerializer, UserDeleteSerializer as BaseUserDeleteSerializer
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from registration.models import User
 
 
 class UserCreateSerializer(BaseCreateUserSerializer):
-    password2 = serializers.CharField(style={'input_type': 'password'},write_only=True)
-    
+    username = serializers.CharField(max_length=150,read_only=True)
+    password = serializers.CharField(required=True,write_only=True,validators=settings.AUTH_PASSWORD_VALIDATORS)
+    password2 = serializers.CharField(required=True,write_only=True)
     class Meta(BaseCreateUserSerializer.Meta):
         fields = ['id','username','password','password2','email','first_name','last_name']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -30,10 +34,14 @@ class UserCreateSerializer(BaseCreateUserSerializer):
         return user
 
 
-
-
-
 class UserRetrieveSerializer(UserSerializer):
+    username = serializers.CharField(
+        max_length=150)
+    
     class Meta(UserSerializer.Meta):
         fields = ['id','username','email','first_name','last_name']
+        
+   
+
+
 
