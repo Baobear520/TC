@@ -25,10 +25,10 @@ class StudentViewSet(CreateModelMixin,viewsets.GenericViewSet):
             serializer = StudentSerializer(student)
             return Response(serializer.data)
         elif request.method == 'PUT':
-            serializer = StudentSerializer(student,data=request.data,context={'request': request})
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data)
+                serializer = StudentSerializer(student,data=request.data,context={'request': request})
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+        return Response(serializer.data)
         
     
 
