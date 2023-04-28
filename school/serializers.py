@@ -15,14 +15,16 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ('username','date_of_birth','photo','show_image','enrollments')
 
-    def save(self, **kwargs):
+
+    def create(self, validated_data):
         user = self.context['request'].user
         if Student.objects.filter(user_id=user.id).exists():
             raise serializers.ValidationError({'Error':'Current user already has a student profile'})
         student = Student.objects.create(
             user_id=user.id,
-            kwargs=self.validated_data)
+            **validated_data)
         return student
+        
 
 
 
