@@ -11,19 +11,9 @@ from registration.models import User
 
 
 class UserCreateSerializer(BaseCreateUserSerializer):
-    #username = serializers.CharField(max_length=150)
-    #password = serializers.CharField(required=True,write_only=True)
-    #password2 = serializers.CharField(required=True,write_only=True)
     class Meta(BaseCreateUserSerializer.Meta):
         model = User
         fields = ['id','username','password','email','first_name','last_name']
-    
-
-    # def validate_password_input(self, attrs):
-    #     if attrs['password'] != attrs['password2']:
-    #         raise serializers.ValidationError({"Error": "Passwords don't match"})
-    #     return attrs
-
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -39,12 +29,18 @@ class UserCreateSerializer(BaseCreateUserSerializer):
 
 
 class UserRetrieveSerializer(UserSerializer):
-    username = serializers.CharField(
-        max_length=150)
     
     class Meta(UserSerializer.Meta):
         fields = ['id','username','email','first_name','last_name']
-        
+        read_only_fields = []
+
+
+
+    
+    
+    
+
+    
    
 
 

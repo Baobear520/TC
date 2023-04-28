@@ -61,7 +61,7 @@ class Course(models.Model):
 
 
 class Enrollment(models.Model):
-    student = models.ForeignKey(Student,on_delete=models.PROTECT)
+    student = models.ForeignKey(Student,on_delete=models.PROTECT,related_name='enrollments')
     date_enrolled = models.DateField(default=timezone.now)
     course = models.ForeignKey(Course,on_delete=models.PROTECT)
     money_paid = models.DecimalField('Payment',

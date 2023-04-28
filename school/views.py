@@ -14,7 +14,7 @@ from school.permissions import IsAdminOrReadOnly,IsOwnerOrAdminOrNoAccess
 class StudentViewSet(CreateModelMixin,viewsets.GenericViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer 
-    permission_classes = []
+    permission_classes = [permissions.IsAuthenticated]
 
 
     @action(detail=False,methods=['GET','PUT'],permission_classes=[permissions.IsAuthenticated])
