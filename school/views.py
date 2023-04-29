@@ -29,25 +29,10 @@ class StudentViewSet(CreateModelMixin,viewsets.GenericViewSet):
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
         return Response(serializer.data)
-        
-    
-
-class EnrollmentViewSet(RetrieveModelMixin,viewsets.GenericViewSet):
-    queryset = Enrollment.objects.all()
-    serializer_class = EnrollmentSerializer
-    permission_classes = []
-
-    @action(detail=False)
-    def me(self,request):
-        (enrollment,created) = Enrollment.objects.get_or_create(
-            student__user_id=request.user.id)
-        serializer = EnrollmentSerializer(enrollment)
-        return Response(serializer.data)
-
     
 
 class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.all()
+    queryset = Course.objects.select_related('level')
     serializer_class = CourseSerializer
     permission_classes = []
 

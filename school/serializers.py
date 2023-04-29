@@ -2,7 +2,9 @@ from django.conf import settings
 from rest_framework import serializers
 from school.models import Student,Enrollment,Course,Level
 
+
 class EnrollmentSerializer(serializers.ModelSerializer):
+    course = serializers.StringRelatedField()
     class Meta:
         model = Enrollment
         fields = ('date_enrolled','course','lessons','money_paid')
@@ -31,15 +33,17 @@ class StudentSerializer(serializers.ModelSerializer):
         
         
 class LevelSerializer(serializers.ModelSerializer):
-    
+    available_courses = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Level
-        fields = '__all__'
+        fields = ('title','description','available_courses')
 
 class CourseSerializer(serializers.ModelSerializer):
+    level = serializers.StringRelatedField()
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = ('title','level','description','number_of_classes','price')
         
 
 

@@ -46,7 +46,7 @@ class Level(models.Model):
     
 class Course(models.Model):
     title = models.TextField(max_length=255)
-    level = models.ForeignKey(Level,on_delete=models.CASCADE)
+    level = models.ForeignKey(Level,on_delete=models.CASCADE,related_name='available_courses')
     description = models.TextField(max_length=611,null=True,blank=True)
     number_of_classes = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField('tuition fee',
