@@ -15,17 +15,20 @@ class StudentViewSet(CreateModelMixin,viewsets.GenericViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer 
     permission_classes = [permissions.IsAuthenticated]
-
+    
+   
 
     @action(detail=False,methods=['GET','PUT'],permission_classes=[permissions.IsAuthenticated])
     def me(self,request):
         (student,created) = Student.objects.get_or_create(
-            user_id__username=request.user.username)
+            user_id=request.user.id)
         if request.method == 'GET':
             serializer = StudentSerializer(student)
             return Response(serializer.data)
         elif request.method == 'PUT':
-                serializer = StudentSerializer(student,data=request.data,context={'request': request})
+                serializer = StudentSerializer(
+                        student,data=request.data,
+                        context={'request': request})
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
         return Response(serializer.data)

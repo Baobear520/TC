@@ -1,5 +1,6 @@
 from django.conf import settings
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from school.models import Student,Enrollment,Course,Level
 
 
@@ -10,22 +11,25 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         fields = ('date_enrolled','course','lessons','money_paid')
 
 class StudentSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True,default=serializers.CurrentUserDefault())
     username = serializers.CharField(source='user.username',read_only=True)
     enrollments = EnrollmentSerializer(many=True,read_only=True)
     
     class Meta:
         model = Student
-        fields = ('username','date_of_birth','photo','show_image','enrollments')
-
+        fields = ('user','username','date_of_birth','photo','show_image','enrollments')
+        validators = [UniqueTogetherValidator(
+            queryset=Student.objects.all(),
+            fields=['user'],
+            message='Current user already has a student profile'
+        )]
+    
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        if Student.objects.filter(user_id=user.id).exists():
-            raise serializers.ValidationError({'Error':'Current user already has a student profile'})
-        student = Student.objects.create(
-            user_id=user.id,
-            **validated_data)
-        return student
+          student = Student.objects.create(
+            user_id=self.context['request'].user.id,
+             **validated_data)
+          return student
         
 
 

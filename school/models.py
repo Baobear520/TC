@@ -34,7 +34,7 @@ class Student(models.Model):
     
     class Meta:
         ordering = ['user__last_name']
-
+        unique_together = [['user','id']]
     
 
 
