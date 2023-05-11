@@ -1,3 +1,5 @@
+
+from django.db.models import OuterRef,Count,Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics,permissions,status, viewsets
 from rest_framework.exceptions import PermissionDenied
@@ -11,12 +13,15 @@ from school.permissions import IsAdminOrReadOnly,IsOwnerOrAdminOrNoAccess
 
     
 
-class StudentViewSet(CreateModelMixin,viewsets.GenericViewSet):
+class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer 
     permission_classes = [permissions.IsAuthenticated]
-    
-   
+  
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return super().get_queryset()
+        
 
     @action(detail=False,methods=['GET','PUT'],permission_classes=[permissions.IsAuthenticated])
     def me(self,request):
@@ -35,7 +40,11 @@ class StudentViewSet(CreateModelMixin,viewsets.GenericViewSet):
     
 
 class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.select_related('level')
+    queryset = Course.objects.select_related('level').annotate(
+        number_of_currently_enrolled=Count('enrollment',
+        filter=Q(enrollment__lessons__gte=1)
+        )
+    )
     serializer_class = CourseSerializer
     permission_classes = []
 
@@ -43,6 +52,9 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
+    
+    
+    
     
 class LevelViewSet(viewsets.ModelViewSet):
     queryset = Level.objects.all()

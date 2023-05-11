@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db.models import Count
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from school.models import Student,Enrollment,Course,Level
@@ -14,7 +15,7 @@ class StudentSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True,default=serializers.CurrentUserDefault())
     username = serializers.CharField(source='user.username',read_only=True)
     enrollments = EnrollmentSerializer(many=True,read_only=True)
-    
+
     class Meta:
         model = Student
         fields = ('user','username','date_of_birth','photo','show_image','enrollments')
@@ -38,17 +39,24 @@ class StudentSerializer(serializers.ModelSerializer):
         
 class LevelSerializer(serializers.ModelSerializer):
     available_courses = serializers.StringRelatedField(many=True)
-
+    
+        
     class Meta:
         model = Level
         fields = ('title','description','available_courses')
 
 class CourseSerializer(serializers.ModelSerializer):
     level = serializers.StringRelatedField()
+    number_of_currently_enrolled = serializers.IntegerField(read_only=True)
+    
     class Meta:
         model = Course
-        fields = ('title','level','description','number_of_classes','price')
+        fields = ('title','level','description','number_of_classes','price','number_of_currently_enrolled')
         
+    # def get_number_of_currently_enrolled(self,course):
+    #     course = Course.objects.
+    #     number = Count(Enrollment.objects.filter(course=course,lessons__gt=0))
+    #     return number
 
 
 
