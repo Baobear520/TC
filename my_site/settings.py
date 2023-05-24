@@ -144,19 +144,17 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('JWT',),
-   "ACCESS_TOKEN_LIFETIME": timedelta(days=1)
+   "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 AUTH_USER_MODEL = 'registration.User'
 
 DJOSER = {
+    'USER_CREATE_PASSWORD_RETYPE':True,
     'SERIALIZERS': {
-        'user_create': 'registration.serializers.UserCreateSerializer',
-        'user': 'registration.serializers.UserRetrieveSerializer',
-        'current_user': 'registration.serializers.UserRetrieveSerializer',
-        },
+        'user_create': 'registration.serializers.UserCreateSerializer',}
+        #'user': 'registration.serializers.UserSerializer',
+        #'current_user': 'registration.serializers.UserRetrieveSerializer',
+        #'user_delete':'registration.serializers.UserDeleteSerializer' },
     }
-# PERMISSIONS = {
-#     'user': ['djoser.permissions.CurrentUserOrAdminOnly'],
-#     'user_create': ['registration.permissions.CanCreateIfAnonOrSuperUser'],
-#     }
+

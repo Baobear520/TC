@@ -8,32 +8,35 @@ from rest_framework import serializers,status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from registration.models import User
-
-
+# class UserSerializer(UserSerializer):
+#     class Meta(UserSerializer.Meta):
+#         model = User
 class UserCreateSerializer(BaseCreateUserSerializer):
     class Meta(BaseCreateUserSerializer.Meta):
         model = User
-        fields = ['id','username','password','email','first_name','last_name']
+        fields = ['username','password','email','first_name','last_name']
 
-    def create(self, validated_data):
-        user = User.objects.create(
-                username=validated_data['username'],
-                email=validated_data['email'],
-                password=validated_data['password'],
-                first_name=validated_data['first_name'],
-                last_name=validated_data['last_name']
-                )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+    # def create(self, validated_data):
+    #     user = User.objects.create(
+    #             username=validated_data['username'],
+    #             email=validated_data['email'],
+    #             password=validated_data['password'],
+    #             first_name=validated_data['first_name'],
+    #             last_name=validated_data['last_name']
+    #             )
+    #     user.set_password(validated_data['password'])
+    #     user.save()
+    #     return user
 
 
-class UserRetrieveSerializer(UserSerializer):
-    
-    class Meta(UserSerializer.Meta):
-        fields = ['id','username','email','first_name','last_name']
-        read_only_fields = []
-
+# class UserRetrieveSerializer(UserSerializer):
+#     class Meta(UserSerializer.Meta):
+#         model = User
+#         fields = ['username','email','first_name','last_name']
+        
+# class UserDeleteSerializer(BaseUserDeleteSerializer):
+#     class Meta():
+#         model = User
 
 
     

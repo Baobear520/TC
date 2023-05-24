@@ -12,13 +12,13 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         fields = ('date_enrolled','course','lessons','money_paid')
 
 class StudentSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True,default=serializers.CurrentUserDefault())
+    #user = serializers.PrimaryKeyRelatedField(read_only=True,default=serializers.CurrentUserDefault())
     username = serializers.CharField(source='user.username',read_only=True)
     enrollments = EnrollmentSerializer(many=True,read_only=True)
 
     class Meta:
         model = Student
-        fields = ('user','username','date_of_birth','photo','show_image','enrollments')
+        fields = ('username','date_of_birth','photo','show_image','enrollments')
         validators = [UniqueTogetherValidator(
             queryset=Student.objects.all(),
             fields=['user'],
