@@ -13,11 +13,17 @@ class StudentInline(admin.TabularInline):
     extra = 0
     actions = []
     
+class StudentInline2(admin.TabularInline):
+    model = Guardian
+    min_num = 1
+    extra = 0
+    actions = []
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('first_name','last_name','is_enrolled')
-    inlines = [StudentInline]
+    autocomplete_fields = ('user',)
+    list_display = ('first_name','last_name','is_enrolled','grade')
+    inlines = [StudentInline,StudentInline2]
     search_fields = ('first_name','last_name')
     readonly_fields = ('show_image',)
     formfield_overrides = {
@@ -36,6 +42,9 @@ class StudentAdmin(admin.ModelAdmin):
             student=OuterRef('pk')).filter(lessons__gt=0)) 
         )
 
+@admin.register(Guardian)
+class GuardianAdmin(admin.ModelAdmin):
+    model = Guardian
 class EnrollmentLessonsLeftFilter(admin.SimpleListFilter):
     title = 'lessons left'
     parameter_name = 'lessons left'
@@ -76,7 +85,7 @@ class EnrollmentAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title','number_of_current_enrollments')
     ordering = ('-number_of_classes','-level')
-    
+   
 
     @admin.display(ordering='number_of_current_enrollments')
     def number_of_current_enrollments(self, course):
@@ -111,6 +120,7 @@ class LevelInline(admin.TabularInline):
     }
     min_num = 1
     extra = 0
+
     
 @admin.register(Level)
 class LevelAdmin(admin.ModelAdmin):

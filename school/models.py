@@ -77,7 +77,7 @@ class Level(models.Model):
     title = models.CharField(
         max_length=15,
         choices=TITLE_CHOICES,
-        default = None)
+        unique=True)
     description = models.TextField(max_length=611,null=True,blank=True)
 
 
@@ -89,8 +89,8 @@ class Course(models.Model):
     STARTER_2 = "S2"
     STARTER_3 = "S3"
     ELEMENTARY_1 = "E1"
-    ELEMENTARY_2 = "E1"
-    ELEMENTARY_3 = "E1"
+    ELEMENTARY_2 = "E2"
+    ELEMENTARY_3 = "E3"
     INTERMEDIATE_1 = 'I1'
     INTERMEDIATE_2 = 'I2'
     INTERMEDIATE_3 = 'I3'
@@ -108,13 +108,13 @@ class Course(models.Model):
         (INTERMEDIATE_2,"Intermediate 2"),
         (INTERMEDIATE_3,"Intermediate 3"),
         (ADVANCED_1,"Advanced 1"),
-        (ADVANCED_1,"Advanced 2"),
-        (ADVANCED_1,"Advanced 3")
+        (ADVANCED_2,"Advanced 2"),
+        (ADVANCED_3,"Advanced 3"),
     ]
     title = models.CharField(
         max_length=15,
         choices=COURSE_CHOICES,
-        default=None)
+        unique=True)
     level = models.ForeignKey(Level,on_delete=models.CASCADE,related_name='available_courses')
     description = models.TextField(max_length=611,null=True,blank=True)
     number_of_classes = models.PositiveIntegerField(validators=[MinValueValidator(1)])
@@ -123,6 +123,9 @@ class Course(models.Model):
         decimal_places=1,
         validators=[MinValueValidator(0)]
         )
+
+    class Meta:
+        ordering = ['title']
 
     def __str__(self) -> str:
         return self.title
