@@ -47,7 +47,7 @@ class Student(models.Model):
     
 
 class Guardian(models.Model):
-    student = models.ManyToManyField(to=Student)
+    student = models.ManyToManyField(Student)
     first_name = models.CharField(max_length=63)
     last_name = models.CharField(max_length=63)
     status = models.CharField(max_length=31)

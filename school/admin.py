@@ -9,21 +9,16 @@ from .models import *
 
 class StudentInline(admin.TabularInline):
     model = Enrollment
-    min_num = 1
+    min_num = 0
     extra = 0
     actions = []
     
-class StudentInline2(admin.TabularInline):
-    model = Guardian
-    min_num = 1
-    extra = 0
-    actions = []
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     autocomplete_fields = ('user',)
     list_display = ('first_name','last_name','is_enrolled','grade')
-    inlines = [StudentInline,StudentInline2]
+    inlines = [StudentInline]
     search_fields = ('first_name','last_name')
     readonly_fields = ('show_image',)
     formfield_overrides = {
@@ -45,6 +40,7 @@ class StudentAdmin(admin.ModelAdmin):
 @admin.register(Guardian)
 class GuardianAdmin(admin.ModelAdmin):
     model = Guardian
+    
 class EnrollmentLessonsLeftFilter(admin.SimpleListFilter):
     title = 'lessons left'
     parameter_name = 'lessons left'
