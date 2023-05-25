@@ -1,3 +1,4 @@
+from typing import Any
 from django.conf import settings
 from django.forms import ModelForm
 from django.utils import timezone
@@ -15,6 +16,14 @@ class Student(models.Model):
     date_of_birth = models.DateField()
     photo = models.ImageField('Upload photo',upload_to='images',null=True,blank=True) 
     
+    A = "a"
+    B = "b"
+    C = "c"
+    GRADE_CHOICES = [
+        (A,"a"),(B,"b"),(C,"c")
+    ]
+    
+    grade = models.CharField(max_length=5,choices=GRADE_CHOICES,default=None)
     def __str__(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
     
@@ -37,15 +46,75 @@ class Student(models.Model):
         unique_together = [['user','id']]
     
 
+class Guardian(models.Model):
+    student = models.ManyToManyField(to=Student)
+    first_name = models.CharField(max_length=63)
+    last_name = models.CharField(max_length=63)
+    status = models.CharField(max_length=31)
+    phone_number1 = models.CharField(max_length=15,unique=True)
+    phone_number2 = models.CharField(max_length=15,blank=True)
+    
+    class Meta:
+        ordering = ['last_name']
+    
+    
+    def __str__(self) -> str:
+        return self.first_name + ' ' + self.last_name
 
+    
 class Level(models.Model):
-    title = models.TextField(max_length=255)
+    STARTER = 'S'
+    ELEMENTARY = 'E'
+    INTERMEDIATE = 'I'
+    ADVANCED = 'A'
+    
+    TITLE_CHOICES = [
+        (STARTER, "Starter"),
+        (ELEMENTARY, "Elementary"),
+        (INTERMEDIATE, "Intermediate"),
+        (ADVANCED, "Advanced"),
+    ]
+    title = models.CharField(
+        max_length=15,
+        choices=TITLE_CHOICES,
+        default = None)
     description = models.TextField(max_length=611,null=True,blank=True)
+
+
     def __str__(self) -> str:
         return self.title
     
 class Course(models.Model):
-    title = models.TextField(max_length=255)
+    STARTER_1 = "S1"
+    STARTER_2 = "S2"
+    STARTER_3 = "S3"
+    ELEMENTARY_1 = "E1"
+    ELEMENTARY_2 = "E1"
+    ELEMENTARY_3 = "E1"
+    INTERMEDIATE_1 = 'I1'
+    INTERMEDIATE_2 = 'I2'
+    INTERMEDIATE_3 = 'I3'
+    ADVANCED_1 = 'A1'
+    ADVANCED_2 = 'A2'
+    ADVANCED_3 = 'A3'
+    COURSE_CHOICES = [
+        (STARTER_1, "Starter 1"),
+        (STARTER_2, "Starter 2"),
+        (STARTER_3, "Starter 3"),
+        (ELEMENTARY_1,"Elementary 1"),
+        (ELEMENTARY_2,"Elementary 2"),
+        (ELEMENTARY_3,"Elementary 3"),
+        (INTERMEDIATE_1,"Intermediate 1"),
+        (INTERMEDIATE_2,"Intermediate 2"),
+        (INTERMEDIATE_3,"Intermediate 3"),
+        (ADVANCED_1,"Advanced 1"),
+        (ADVANCED_1,"Advanced 2"),
+        (ADVANCED_1,"Advanced 3")
+    ]
+    title = models.CharField(
+        max_length=15,
+        choices=COURSE_CHOICES,
+        default=None)
     level = models.ForeignKey(Level,on_delete=models.CASCADE,related_name='available_courses')
     description = models.TextField(max_length=611,null=True,blank=True)
     number_of_classes = models.PositiveIntegerField(validators=[MinValueValidator(1)])
