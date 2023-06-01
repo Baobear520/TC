@@ -3,6 +3,7 @@ from django.conf import settings
 from django.forms import ModelForm
 from django.utils import timezone
 from django.utils.html import mark_safe
+from django.utils.decorators import method_decorator
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
@@ -19,11 +20,14 @@ class Student(models.Model):
     A = "a"
     B = "b"
     C = "c"
+    NE = 'Not enrolled'
     GRADE_CHOICES = [
-        (A,"a"),(B,"b"),(C,"c")
+        (A,"a"),(B,"b"),(C,"c"),
+        (NE,'Not enrolled')
     ]
-    
-    grade = models.CharField(max_length=5,choices=GRADE_CHOICES,default=None)
+    grade = models.CharField(max_length=15,choices=GRADE_CHOICES,default=NE)
+
+
     def __str__(self) -> str:
         return f'{self.user.first_name} {self.user.last_name}'
     
@@ -34,6 +38,20 @@ class Student(models.Model):
     @admin.display(ordering='user__last_name')
     def last_name(self):
         return self.user.last_name
+    
+    @property
+    def grade_repr(self):
+        if self.grade == 'Not enrolled':
+            return self.grade
+        enrollments = self.enrollments.filter(lessons__gt=0)  # Access all active enrollments related to the student
+        for enrollment in enrollments:
+            if enrollment:
+                return f"{enrollment.course}{self.grade}"
+            
+    
+    def display_grade(self):
+        return self.grade_repr
+    display_grade.short_description = 'Class'
 
     def show_image(self):
         if self.photo:
@@ -41,18 +59,20 @@ class Student(models.Model):
         return '-'
     show_image.short_description = 'Photo preview'
     
+
+    
     class Meta:
         ordering = ['user__last_name']
         unique_together = [['user','id']]
     
 
-class Guardian(models.Model):
+class Relative(models.Model):
     student = models.ManyToManyField(Student)
     first_name = models.CharField(max_length=63)
     last_name = models.CharField(max_length=63)
     status = models.CharField(max_length=31)
-    phone_number1 = models.CharField(max_length=15,unique=True)
-    phone_number2 = models.CharField(max_length=15,blank=True)
+    phone_number1 = models.CharField(max_length=20,unique=True)
+    phone_number2 = models.CharField(max_length=15,blank=True,null=True)
     
     class Meta:
         ordering = ['last_name']
@@ -61,7 +81,11 @@ class Guardian(models.Model):
     def __str__(self) -> str:
         return self.first_name + ' ' + self.last_name
 
-    
+    # @property
+    # def has_student(self):
+    #     queryset = Relative.objects.
+    #     return queryset
+
 class Level(models.Model):
     STARTER = 'S'
     ELEMENTARY = 'E'

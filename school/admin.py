@@ -1,6 +1,9 @@
+from typing import Any, Optional
 from django.contrib import admin
-from django.db.models import Q, Count, OuterRef, Subquery, Value, F, Exists
+from django.db.models import Q, Count, OuterRef, Subquery, Value, F, Exists, Prefetch
+from django.db.models.query import QuerySet
 from django.forms import TextInput, Textarea
+from django.http.request import HttpRequest
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
 from .models import *
@@ -17,9 +20,11 @@ class StudentInline(admin.TabularInline):
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     autocomplete_fields = ('user',)
-    list_display = ('first_name','last_name','is_enrolled','grade')
+    list_display = ('first_name','last_name','is_enrolled','display_grade')
+    list_per_page = 10
     inlines = [StudentInline]
     search_fields = ('first_name','last_name')
+    list_select_related = ('user',)
     readonly_fields = ('show_image',)
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'20'})},
@@ -31,15 +36,33 @@ class StudentAdmin(admin.ModelAdmin):
         return student.is_enrolled
     
     def get_queryset(self,request):
-        return super().get_queryset(request).annotate(
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('enrollments').annotate(
             is_enrolled=Exists(
             Enrollment.objects.filter(
             student=OuterRef('pk')).filter(lessons__gt=0)) 
         )
+        return queryset
+@admin.register(Relative)
+class RelativeAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('student',)
+    model = Relative
+    #list_display = ('__str__','has_student',)
+    list_per_page = 10
+    
+    
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('student')
+        return queryset
+    
+    # @admin.display(boolean=True)
+    # def has_student(self,obj):
+    #     return obj.has_student
+ 
 
-@admin.register(Guardian)
-class GuardianAdmin(admin.ModelAdmin):
-    model = Guardian
+    
+
     
 class EnrollmentLessonsLeftFilter(admin.SimpleListFilter):
     title = 'lessons left'
@@ -73,13 +96,15 @@ class EnrollmentAdmin(admin.ModelAdmin):
                     'course', 'money_paid','lessons')
     ordering = ('-lessons',)
     date_hierarchy = 'date_enrolled'
-    list_filter = ('student','course',EnrollmentLessonsLeftFilter)
+    list_filter = ('course',EnrollmentLessonsLeftFilter)
     list_editable = ('lessons', 'money_paid')
+    list_select_related = ('course','student')
     
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title','number_of_current_enrollments')
+    list_select_related = ('level',)
     ordering = ('-number_of_classes','-level')
    
 

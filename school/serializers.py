@@ -18,7 +18,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('username','date_of_birth','photo','show_image','enrollments')
+        fields = ('username','date_of_birth','photo','show_image','enrollments','display_grade')
         validators = [UniqueTogetherValidator(
             queryset=Student.objects.all(),
             fields=['user'],

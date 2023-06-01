@@ -8,6 +8,7 @@ from .models import *
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username','status','is_active')
+    list_per_page = 10
     search_fields = ('username',)
     list_filter = ('status','is_active')
 
