@@ -46,19 +46,21 @@ class StudentAdmin(admin.ModelAdmin):
 @admin.register(Relative)
 class RelativeAdmin(admin.ModelAdmin):
     autocomplete_fields = ('student',)
-    model = Relative
-    #list_display = ('__str__','has_student',)
+    list_display = ('full_name','status','has_student')
     list_per_page = 10
-    
+   
     
     def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
         queryset = super().get_queryset(request)
         queryset = queryset.prefetch_related('student')
         return queryset
     
-    # @admin.display(boolean=True)
-    # def has_student(self,obj):
-    #     return obj.has_student
+    def full_name(self,obj):
+        return f'{obj.first_name} {obj.last_name}'
+    
+    @admin.display(boolean=True)
+    def has_student(self,obj):
+        return obj.student.exists()
  
 
     

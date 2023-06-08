@@ -53,10 +53,7 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = ('title','level','description','number_of_classes','price','number_of_currently_enrolled')
         
-    # def get_number_of_currently_enrolled(self,course):
-    #     course = Course.objects.
-    #     number = Count(Enrollment.objects.filter(course=course,lessons__gt=0))
-    #     return number
+  
 
 
 

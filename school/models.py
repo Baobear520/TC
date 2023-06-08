@@ -59,8 +59,6 @@ class Student(models.Model):
         return '-'
     show_image.short_description = 'Photo preview'
     
-
-    
     class Meta:
         ordering = ['user__last_name']
         unique_together = [['user','id']]
@@ -77,14 +75,9 @@ class Relative(models.Model):
     class Meta:
         ordering = ['last_name']
     
-    
     def __str__(self) -> str:
-        return self.first_name + ' ' + self.last_name
+        return f'{self.first_name} {self.last_name}'
 
-    # @property
-    # def has_student(self):
-    #     queryset = Relative.objects.
-    #     return queryset
 
 class Level(models.Model):
     STARTER = 'S'
@@ -174,14 +167,10 @@ class Enrollment(models.Model):
     def __str__(self) -> str:
         return str(self.date_enrolled)
     
-    def save(self,*args,**kwargs):
-        if self.pk is None:
-            self.lessons = self.course.number_of_classes
+    def clean(self) -> None:
         if self.lessons > self.course.number_of_classes:
-            raise ValidationError('Number of lessons left cannot be greater than number of lessons in a course')
-        return super().save(*args,**kwargs)
-    
-    
+            raise ValidationError('Number of lessons left cannot be greater than the number of lessons in the course.')
 
-   
-   
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Validate the instance before saving
+        super().save(*args, **kwargs)

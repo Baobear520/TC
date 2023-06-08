@@ -12,6 +12,7 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('username',)
     list_filter = ('status','is_active')
 
+    
 
     
 
