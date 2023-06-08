@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any
 from django.conf import settings
 from django.forms import ModelForm
@@ -168,9 +169,13 @@ class Enrollment(models.Model):
         return str(self.date_enrolled)
     
     def clean(self) -> None:
+        if not self.pk:
+            self.lessons = self.course.number_of_classes
         if self.lessons > self.course.number_of_classes:
             raise ValidationError('Number of lessons left cannot be greater than the number of lessons in the course.')
-
+        if self.date_enrolled > date.today():
+            raise ValidationError('Date of enrollment cannot be earlier than current date')
+        
     def save(self, *args, **kwargs):
         self.full_clean()  # Validate the instance before saving
         super().save(*args, **kwargs)

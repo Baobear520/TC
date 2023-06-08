@@ -1,29 +1,36 @@
-from typing import Any, Optional
+from typing import Any, List, Optional, Tuple
 from django.contrib import admin
 from django.db.models import Q, Count, OuterRef, Subquery, Value, F, Exists, Prefetch
 from django.db.models.query import QuerySet
-from django.forms import TextInput, Textarea
+from django.forms import BaseInlineFormSet, TextInput, Textarea
 from django.http.request import HttpRequest
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
 from .models import *
 # Register your models here.
-
-
+       
+   
 class StudentInline(admin.TabularInline):
     model = Enrollment
     min_num = 0
     extra = 0
     actions = []
-    
+
+class RelativeInlineFormSet(BaseInlineFormSet):
+    model = Relative.student.through  # Intermediate model for the many-to-many relationship
+
+class RelativeInline(admin.TabularInline):
+    model = Relative.student.through  # Intermediate model for the many-to-many relationship
+    formset = RelativeInlineFormSet
+    extra = 0
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     autocomplete_fields = ('user',)
     list_display = ('first_name','last_name','is_enrolled','display_grade')
     list_per_page = 10
-    inlines = [StudentInline]
-    search_fields = ('first_name','last_name')
+    inlines = [StudentInline,RelativeInline]
+    search_fields = ('user__first_name','user__last_name')  
     list_select_related = ('user',)
     readonly_fields = ('show_image',)
     formfield_overrides = {
@@ -43,13 +50,20 @@ class StudentAdmin(admin.ModelAdmin):
             student=OuterRef('pk')).filter(lessons__gt=0)) 
         )
         return queryset
+    
+    @admin.display(ordering=('-enrollments__course'))
+    def display_grade(self,obj):
+        return obj.grade_repr
+    display_grade.short_description = 'Class'
+    
+    
+
 @admin.register(Relative)
 class RelativeAdmin(admin.ModelAdmin):
     autocomplete_fields = ('student',)
-    list_display = ('full_name','status','has_student')
+    list_display = ('full_name','status','has_student',)
     list_per_page = 10
    
-    
     def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
         queryset = super().get_queryset(request)
         queryset = queryset.prefetch_related('student')
@@ -62,7 +76,7 @@ class RelativeAdmin(admin.ModelAdmin):
     def has_student(self,obj):
         return obj.student.exists()
  
-
+    
     
 
     
