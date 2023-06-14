@@ -1,14 +1,11 @@
 
-from django.conf import settings
-from rest_framework.permissions import AllowAny,IsAuthenticated
-from djoser import views
-#from registration.permissions import CanCreateIfAnonOrSuperUser
+from rest_framework import viewsets,generics
+from registration.models import User
+from registration.serializers import UserSerializer,UserRegisterSerializer
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all() 
+    serializer_class = UserSerializer
 
-
-# class UserViewSet(views.UserViewSet):
-#     def get_permissions(self):
-#         if self.request.method == 'GET':
-#             return [AllowAny()]
-#         return [IsAuthenticated()]
-        
-#         
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer

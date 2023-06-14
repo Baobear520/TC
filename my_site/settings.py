@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     "school.apps.SchoolConfig",
     "registration.apps.RegistrationConfig",
     "debug_toolbar",
-    "djoser"
+
+    
+   
 ]
 
 MIDDLEWARE = [
@@ -149,12 +151,5 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'registration.User'
 
-DJOSER = {
-    'USER_CREATE_PASSWORD_RETYPE':True,
-    'SERIALIZERS': {
-        'user_create': 'registration.serializers.UserCreateSerializer',}
-        #'user': 'registration.serializers.UserSerializer',
-        #'current_user': 'registration.serializers.UserRetrieveSerializer',
-        #'user_delete':'registration.serializers.UserDeleteSerializer' },
-    }
+
 

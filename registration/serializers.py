@@ -1,43 +1,47 @@
-
-from django.conf import settings
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.password_validation import validate_password
-from django.db import IntegrityError
-from djoser.serializers import UserCreateSerializer as BaseCreateUserSerializer, UserSerializer, UserDeleteSerializer as BaseUserDeleteSerializer
-from rest_framework import serializers,status
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
+from rest_framework.validators import UniqueValidator
+from rest_framework import serializers
 from registration.models import User
-# class UserSerializer(UserSerializer):
-#     class Meta(UserSerializer.Meta):
-#         model = User
-class UserCreateSerializer(BaseCreateUserSerializer):
-    class Meta(BaseCreateUserSerializer.Meta):
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
         model = User
-        fields = ['username','password','email','first_name','last_name']
+        fields = ('id','username','email')
 
-    # def create(self, validated_data):
-    #     user = User.objects.create(
-    #             username=validated_data['username'],
-    #             email=validated_data['email'],
-    #             password=validated_data['password'],
-    #             first_name=validated_data['first_name'],
-    #             last_name=validated_data['last_name']
-    #             )
-    #     user.set_password(validated_data['password'])
-    #     user.save()
-    #     return user
+class UserRegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    password = serializers.CharField(
+        write_only=True, required=True,
+        validators=[validate_password]
+    )
+    password2 = serializers.CharField(write_only=True, required=True)
 
-
-# class UserRetrieveSerializer(UserSerializer):
-#     class Meta(UserSerializer.Meta):
-#         model = User
-#         fields = ['username','email','first_name','last_name']
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name')
+     
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({'password':"Passwords don't match."})
+        return attrs
+    
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
+        )
         
-# class UserDeleteSerializer(BaseUserDeleteSerializer):
-#     class Meta():
-#         model = User
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
+
+        
+
+        
 
     
     

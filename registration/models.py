@@ -1,3 +1,4 @@
+from typing import Any, Dict, Tuple
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser 
@@ -18,5 +19,4 @@ class User(AbstractUser):
     status = models.CharField(max_length=15,choices=STATUS_CHOICES,default='Student')
     
 
-    
     
