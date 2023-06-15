@@ -21,8 +21,8 @@ class StudentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_staff:
             return super().get_queryset()
-        
-
+  
+         
     @action(detail=False,methods=['GET','PUT'],permission_classes=[permissions.IsAuthenticated])
     def me(self,request):
         (student,created) = Student.objects.get_or_create(

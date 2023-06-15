@@ -57,12 +57,12 @@ class Student(models.Model):
     def show_image(self):
         if self.photo:
             return mark_safe(f'<img src = "{self.photo.url}" width = "300"/>')
-        return '-'
+        return None
     show_image.short_description = 'Photo preview'
     
     class Meta:
         ordering = ['user__last_name']
-        unique_together = [['user','id']]
+       
     
 
 class Relative(models.Model):

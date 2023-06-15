@@ -12,28 +12,19 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         fields = ('date_enrolled','course','lessons','money_paid')
 
 class StudentSerializer(serializers.ModelSerializer):
-    #user = serializers.PrimaryKeyRelatedField(read_only=True,default=serializers.CurrentUserDefault())
     username = serializers.CharField(source='user.username',read_only=True)
     enrollments = EnrollmentSerializer(many=True,read_only=True)
 
     class Meta:
         model = Student
         fields = ('username','date_of_birth','photo','show_image','enrollments','display_grade')
-        validators = [UniqueTogetherValidator(
-            queryset=Student.objects.all(),
-            fields=['user'],
-            message='Current user already has a student profile'
-        )]
-    
-
+        
     def create(self, validated_data):
           student = Student.objects.create(
             user_id=self.context['request'].user.id,
              **validated_data)
           return student
         
-
-
 
         
         

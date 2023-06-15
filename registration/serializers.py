@@ -1,11 +1,28 @@
 from django.contrib.auth.password_validation import validate_password
+from django.urls import reverse
 from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
 from registration.models import User
-class UserSerializer(serializers.ModelSerializer):
+
+class BaseUserSerializer(serializers.HyperlinkedModelSerializer):
+    profile = serializers.HyperlinkedIdentityField(view_name='user-detail',format='html')
+
     class Meta:
         model = User
-        fields = ('id','username','email')
+        fields = ('username','status','profile') 
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    student_profile = serializers.SerializerMethodField()
+
+    def get_student_profile(self, obj):
+        if obj.status == 'Student' and hasattr(obj, 'student'):
+            # Assuming the student detail URL is named 'student-detail'
+            return reverse('student-detail', args=[obj.student.pk])
+        return None
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name','student_profile')
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
