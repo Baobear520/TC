@@ -1,7 +1,8 @@
 from django.contrib.auth.password_validation import validate_password
 from django.urls import reverse
-from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from rest_framework.response import Response
 from registration.models import User
 
 class BaseUserSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,16 +14,23 @@ class BaseUserSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     student_profile = serializers.SerializerMethodField()
+    reset_password = serializers.HyperlinkedIdentityField(
+        view_name='reset-password',
+        format='html'
+    )
 
     def get_student_profile(self, obj):
-        if obj.status == 'Student' and hasattr(obj, 'student'):
+        student = obj.student
+        if obj.status == 'Student' and hasattr(obj,'student'):
             # Assuming the student detail URL is named 'student-detail'
-            return reverse('student-detail', args=[obj.student.pk])
+            return self.context['request'].build_absolute_uri(reverse(
+                'student-detail',args=['me'])
+            ) 
         return None
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name','student_profile')
+        fields = ('username', 'email', 'first_name', 'last_name','student_profile','reset_password')
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -55,7 +63,31 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        validators=[validate_password]
+    )
+    new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        validators=[validate_password]
+    )
+    confirm_password = serializers.CharField(
+        write_only=True,
+        required=True,
+     )
+    class Meta:
+        model = User
+        fields = ('old_password','new_password','confirm_password')
 
+    def validate(self, attrs):
+        if attrs['old_password'] == attrs['new_password']:
+            raise serializers.ValidationError({'Validation_error':'New password is the same.Please provide a different one.'})
+        if attrs['new_password'] != attrs['confirm_password']:
+            raise serializers.ValidationError({'Validation_error': "Passwords don't match."})
+        return super().validate(attrs)
         
 
         

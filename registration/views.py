@@ -1,7 +1,20 @@
-from django.shortcuts import redirect
-from rest_framework import viewsets,generics,permissions
+from rest_framework import generics,permissions
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from registration.models import User
-from registration.serializers import BaseUserSerializer, UserProfileSerializer,UserRegisterSerializer
+from registration.serializers import BaseUserSerializer, ResetPasswordSerializer, UserProfileSerializer,UserRegisterSerializer
+
+
+@api_view(['GET'])
+def api_root(request,format=None):
+    return Response({
+        'users':reverse('user-list',request=request,format=format),
+        'create user':reverse('user-create',request=request,format=format),
+        'login':reverse('token-obtain_pair',request=request,format=format),
+        'refresh':reverse('token-refresh',request=request,format=format),
+    })
+
 
 
 class UserListView(generics.ListAPIView):
@@ -16,15 +29,19 @@ class UserListView(generics.ListAPIView):
         else:
             user = self.request.user
         return self.queryset.filter(pk=user.pk)
-  
+    
+    
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    
 
-
-
+class ResetPasswordView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ResetPasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()

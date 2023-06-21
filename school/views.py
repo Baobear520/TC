@@ -9,7 +9,6 @@ from rest_framework.decorators import action
 from school.models import Student,Enrollment,Course,Level
 from school.serializers import StudentSerializer,EnrollmentSerializer,\
 CourseSerializer,LevelSerializer
-from school.permissions import IsAdminOrReadOnly,IsOwnerOrAdminOrNoAccess
 
     
 
@@ -17,6 +16,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer 
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'me'
   
     def get_queryset(self):
         if self.request.user.is_staff:
