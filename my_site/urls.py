@@ -20,6 +20,7 @@ from django.conf import settings
 from rest_framework import routers
 
 urlpatterns = [
+    path('homepage',include ('home.urls')),
     path('registration/', include ('registration.urls')),
     path('admin/', admin.site.urls),
     path('__debug__/', include('debug_toolbar.urls')),

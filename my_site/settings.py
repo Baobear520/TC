@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "school.apps.SchoolConfig",
     "registration.apps.RegistrationConfig",
     "debug_toolbar",
+    "home.apps.HomeConfig",
 
     
    
