@@ -1,11 +1,35 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Our Training Center</title>
+  <link rel="stylesheet" href="{% static 'home/styles.css' %}">
 </head>
 <body>
-    
+  <header>
+    <nav>
+      <ul>
+        <li><a href="http://127.0.0.1:8000/homepage">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="http://127.0.0.1:8000/school/courses">Courses</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="http://127.0.0.1:8000/registration/login">Login</a></li>
+        <li><a href="http://127.0.0.1:8000/registration/create">Sign up</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Welcome to Our Training Center!</h1>
+      <p>Discover and learn with us!</p>
+      <a href="#" class="btn">Try for free</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2023 My School App. All rights reserved.</p>
+  </footer>
 </body>
 </html>
