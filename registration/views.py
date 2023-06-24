@@ -4,6 +4,10 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from registration.models import User
 from registration.serializers import BaseUserSerializer, ResetPasswordSerializer, UserProfileSerializer,UserRegisterSerializer
+import logging
+import requests
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(['GET'])
@@ -47,3 +51,5 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
     permission_classes = [permissions.AllowAny]
+
+  

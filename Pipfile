@@ -10,6 +10,9 @@ djangorestframework-simplejwt = "*"
 django-debug-toolbar = "*"
 mysqlclient = "*"
 pillow = "*"
+whitenoise = "*"
+requests = "*"
+gunicorn = "*"
 
 [dev-packages]
 
