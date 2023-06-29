@@ -3,3 +3,6 @@ main.log
 *.log
 *.pyc
 .DS_Store
+/media/
+/static/
+general.log
